@@ -43,7 +43,6 @@ async function getCacheData (key: string, gen: () => Promise<any>) {
   gcCache(cacheDir)
 
   const cacheFile = path.join(cacheDir, key)
-  console.log("get data",cacheFile);
 
   if (await fs.pathExists(cacheFile)) {
     const stat = await fs.stat(cacheFile)
