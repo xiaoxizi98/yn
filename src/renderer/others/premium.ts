@@ -110,6 +110,7 @@ async function upgradeV1License (oldLicense: string) {
 }
 
 function _getPurchased (force = false) {
+  return true
   logger.debug('_getPurchased', force)
   if (FLAG_DEMO || MODE === 'share-preview') {
     return true
