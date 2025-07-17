@@ -8,7 +8,7 @@ import config from '../config'
 import { ASSETS_DIR, BIN_DIR, CACHE_DIR } from '../constant'
 import { getAction } from '../action'
 import { request } from 'undici'
-import { finished } from 'stream/promises';
+const { PassThrough } = require("stream");
 
 function plantumlBase64 (base64: string) {
   // eslint-disable-next-line quote-props
@@ -57,41 +57,15 @@ async function getCacheData (key: string, gen: () => Promise<any>) {
     throw new Error('No data')
   }
 
-  let lastError: Error | null = null;
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    try {
-      if (typeof data.pipe === 'function') {
-        // 如果是流数据，需要重新创建可读流（因为流只能消费一次）
-        const dataStream = await gen(); // 重新获取数据流
-        const writeStream = fs.createWriteStream(cacheFile);
-        dataStream.pipe(writeStream);
-        await finished(writeStream);
-      } else {
-        // 非流数据直接写入
-        await fs.writeFile(cacheFile, data);
-      }
-
-      // 验证写入结果
-      const stat = await fs.stat(cacheFile);
-      if (stat.size === 0) {
-        throw new Error('Empty file after write');
-      }
-
-      return data;
-    } catch (error) {
-      lastError = error as Error;
-      // 清理可能不完整的文件
-      if (await fs.pathExists(cacheFile)) {
-        await fs.remove(cacheFile).catch(() => {});
-      }
-      if (attempt < 3) {
-        console.log("重试第"+attempt+"次");
-        
-        await new Promise(resolve => setTimeout(resolve, 200 * attempt)); // 延迟重试
-      }
-    }
+  if (typeof data.pipe === "function") {
+    const passThrough = new PassThrough();
+    data.pipe(passThrough);
+    data.pipe(fs.createWriteStream(cacheFile));
+    return passThrough;
+  } else {
+    fs.writeFile(cacheFile, data);
+    return data;
   }
-  throw new Error(`Failed to write cache after 3 attempts: ${lastError?.message}`);
 }
 
 export default async function (data: string): Promise<{ content: any, type: string }> {
