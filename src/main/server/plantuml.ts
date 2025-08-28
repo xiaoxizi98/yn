@@ -62,8 +62,8 @@ async function getCacheData (key: string, gen: () => Promise<any>) {
     data.pipe(fs.createWriteStream(cacheFile));
     return passThrough;
   } else {
-    fs.writeFile(cacheFile, data);
-    return data;
+    await fs.writeFile(cacheFile, data);
+    return fs.createReadStream(cacheFile)
   }
 }
 
