@@ -1,6 +1,6 @@
 {
   "name": "yank.note",
-  "version": "3.83.2",
+  "version": "3.85.0",
   "description": "Yank Note: A highly extensible Markdown editor, designed for productivity.",
   "main": "dist/main/app.js",
   "license": "AGPL-3.0",
@@ -42,7 +42,7 @@
     "ip": "^1.1.9",
     "jsonrpc-bridge": "^0.0.4",
     "jsonwebtoken": "^9.0.0",
-    "koa": "^2.16.1",
+    "koa": "^2.16.2",
     "koa-body": "^4.2.0",
     "lodash": "^4.17.21",
     "mime": "^2.5.2",

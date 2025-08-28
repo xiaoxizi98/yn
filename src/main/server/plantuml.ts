@@ -107,7 +107,6 @@ export default async function (data: string): Promise<{ content: any, type: stri
     }else{
       api_url = api.replace('{data}', plantumlBase64(data))
     }
-    console.log(api_url);
     
     const dispatcher = await getAction('get-proxy-dispatcher')(api_url)
 
